@@ -1,7 +1,8 @@
 import './cardToday.less'
 import React from 'react'
 import { Doughnut } from 'react-chartjs-2'
-import { red } from '@material-ui/core/colors'
+
+
 const СardToday = ({ newCards, winrate, totalCards, studyTime, strike, repeat, userName }) => {
   const data = {
     labels: ['New cards', 'Correct answers', 'Total cards'],
@@ -12,6 +13,9 @@ const СardToday = ({ newCards, winrate, totalCards, studyTime, strike, repeat, 
       },
     ],
   }
+  
+  const persent = typeof strike !== 'Infinity' ? Math.floor(strike*100) : 0
+  
   const options = {
     tooltips: {
       enabled: true,
@@ -52,9 +56,9 @@ const СardToday = ({ newCards, winrate, totalCards, studyTime, strike, repeat, 
       </div>
 
       <div className='eagle'>
-        <p className='eagle__text eagle__text_left'>Correct answers strike</p>
+        <p className='eagle__text eagle__text_left'>Correct answers persent</p>
         <div className='eagle__digs'>
-          <p className='eagle__dig'>{strike}</p>
+          <p className='eagle__dig'>{persent} %</p>
           <p className='eagle__dig eagle__dig_right-wing'>{repeat}</p>
         </div>
         <p className='eagle__text'>Words for repetition</p>

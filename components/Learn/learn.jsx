@@ -4,6 +4,7 @@ import { PlayCard, ProgressBar } from 'components'
 import { createUserWord, updateUserWord, saveSettings } from 'lib'
 import { withModal } from 'components/HOC/hoc'
 import './style.less'
+// import {Statistics} from 'components'
 
 const LearnComponent = ( { showModal } ) => {
   const { learnProgress, words, cardSettings: { amountOfCards, level, difficultOnly } } = useContext( Context )
@@ -23,6 +24,7 @@ const LearnComponent = ( { showModal } ) => {
     if ( idx >= amountOfCards ) {
       console.log( 'End of learning' )
       return
+      // return (<Statistics learnEnd={0}/>)
     }
 
     if ( !words[idx] ) return

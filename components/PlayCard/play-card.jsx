@@ -14,23 +14,9 @@ import { Context } from 'context'
 
 import './play-card.less'
 
-// const word = {
-//   id: '5e9f5ee35eb9e72bc21af4a0',
-//   group: 0,
-//   page: 0,
-//   word: 'alcohol',
-//   image: 'files/01_0002.jpg',
-//   audio: 'files/01_0002.mp3',
-//   audioMeaning: 'files/01_0002_meaning.mp3',
-//   audioExample: 'files/01_0002_example.mp3',
-//   textMeaning: '<i>Alcohol</i> is a type of drink that can make people drunk.',
-//   textExample: 'A person should not drive a car after he or she has been drinking <b>alcohol</b>.',
-//   transcription: '[ǽlkəhɔ̀ːl]',
-//   textExampleTranslate: 'Человек не должен водить машину после того, как он выпил алкоголь',
-//   textMeaningTranslate: 'Алкоголь - это тип напитка, который может сделать людей пьяными',
-//   wordTranslate: 'алкоголь',
-//   wordsPerExampleSentence: 15,
-// }
+import { saveStatistic } from 'lib'
+import { learnWordsStatistic, learnWordsPerDay } from 'lib/helpers/statisticHelp'
+
 
 const useStyles = makeStyles( ( theme ) => ( {
   btnRow: {
@@ -85,9 +71,14 @@ const useStyles = makeStyles( ( theme ) => ( {
 } ) )
 
 const PlayCardComponent = ( { word, next, updateWordsDB, showInfo } ) => {
-  const { cardSettings, setCardSettings,
+  const { 
+    cardSettings, 
+    setCardSettings,
+    appStatistics,
+    setAppStatistics,
     cardSettings: { showDefenition, REPEATbutton, HARDbutton, SHOWANSWERbutton, EASYbutton, addIllustration, defenitionTranslation, totalLearned, todayLearned },
   } = useContext( Context )
+
   const classes = useStyles()
   const [audioWord, setAudioWord] = useState( null )
   const [audioMeaning, setAudioMeaning] = useState( null )
@@ -99,6 +90,24 @@ const PlayCardComponent = ( { word, next, updateWordsDB, showInfo } ) => {
   const [isGiveUp, setIsGiveUp] = useState( false )
 
   let isMounted = false
+
+  //   ---------------------------------function for storing words into statistic 
+  const createStatistic = (bool) => {
+    const idword = word.id || word._id
+    
+    const options = {
+        month: "long",
+        day: "numeric",
+        weekday: "short",
+        hour: "numeric",
+    }; 
+    const date = new Date(Date.now()-20031).toLocaleString('en', options);
+    const newStatistic = { ...appStatistics, [idword]: learnWordsStatistic(appStatistics, idword, bool), [date]: learnWordsPerDay(appStatistics, date, idword, bool) }
+    
+    setAppStatistics(newStatistic)
+    saveStatistic(newStatistic)
+  }
+
 
   useEffect( () => {
     isMounted = true
@@ -140,10 +149,12 @@ const PlayCardComponent = ( { word, next, updateWordsDB, showInfo } ) => {
     } else if ( isGuessed === true ) {
       word.learnIndex = word.learnIndex + 20 <= 100 ? word.learnIndex + 20 : 100
       word.nextRepeat = getRepetitionTime( word.learnIndex )
+      createStatistic(true)
       updateWordsDB( word )
     } else if ( isGuessed !== false ) {
       word.learnIndex = word.learnIndex - 20 > 0 ? word.learnIndex - 20 : 0
       word.nextRepeat = getRepetitionTime( word.learnIndex )
+      createStatistic(false)
       updateWordsDB( word )
     }
   }, [isGuessed, isGiveUp] )
@@ -193,7 +204,11 @@ const PlayCardComponent = ( { word, next, updateWordsDB, showInfo } ) => {
             />
           </CardText>
           {showDefenition ? (
-            <CardText className='second-row' outerStyles={classes.styleDictionary} index='textMeaning' word={word} defenitionTranslation={defenitionTranslation} />
+            <CardText className='second-row' 
+                      outerStyles={classes.styleDictionary} 
+                      index='textMeaning' 
+                      word={word} 
+                      defenitionTranslation={defenitionTranslation} />
           ) : null}
           <PlayFooter
             word={word}
