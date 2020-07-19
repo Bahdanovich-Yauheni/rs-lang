@@ -51,8 +51,9 @@ const smallImg = { width: '4.8rem', height: '4.8rem' }
 
 export const Word = ({ src, word, transcription, wordTranslate, isLoaded, audio, audioMeaning, audioExample }) => {
   const classes = useStyle()
-  const { isTranscription } = useContext(DictionaryContext)
-  const { cardSettings: { isGlobalSound } } = useContext(Context)
+  const {
+    cardSettings: { isGlobalSound, showTranscription },
+  } = useContext(Context)
 
   const [audioWordSound, setAudioWord] = useState(null)
   const [audioMeaningSound, setAudioMeaning] = useState(null)
@@ -112,7 +113,7 @@ export const Word = ({ src, word, transcription, wordTranslate, isLoaded, audio,
           </span>
           <audio ref={audioElement}></audio>
         </p>
-        {isTranscription ? (
+        {showTranscription ? (
           isLoaded ? (
             <p className={classes.transcription}>{transcription}</p>
           ) : (
@@ -123,11 +124,11 @@ export const Word = ({ src, word, transcription, wordTranslate, isLoaded, audio,
           {isLoaded ? wordTranslate : <Skeleton animation='wave' variant='text' width={wordTranslate.length * 9.2} />}
         </p>
       </div>
-      <div className='image' style={isTranscription ? normalImg : smallImg}>
+      <div className='image' style={showTranscription ? normalImg : smallImg}>
         {isLoaded ? (
-          <img src={src} alt={`Associative image for ${word}`} style={isTranscription ? normalImg : smallImg} />
+          <img src={src} alt={`Associative image for ${word}`} style={showTranscription ? normalImg : smallImg} />
         ) : (
-          <Skeleton animation='wave' variant='circle' style={isTranscription ? normalImg : smallImg} />
+          <Skeleton animation='wave' variant='circle' style={showTranscription ? normalImg : smallImg} />
         )}
       </div>
     </div>

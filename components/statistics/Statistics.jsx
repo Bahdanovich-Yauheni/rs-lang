@@ -7,7 +7,6 @@ import theme from './theme'
 import { getStatistic } from 'lib'
 import { Context } from 'context'
 
-
 import './statistics.less'
 
 import Paper from '@material-ui/core/Paper'
@@ -116,9 +115,8 @@ const style = createMuiTheme({
   },
 })
 
-export function Statistics({learnEnd}) {
-
-  const [value, setValue] = useState(1)
+export function Statistics({ learnEnd, initialActive, isEnd }) {
+  const [value, setValue] = useState(initialActive !== undefined ? initialActive : 1)
 
   const [amountOfWords, setAmountOfWords] = useState(0)
   const [allcorrectAnswers, setCorrectAnswers] = useState(0)
@@ -144,58 +142,60 @@ export function Statistics({learnEnd}) {
     setValue(newValue)
   }
 
-  useEffect(()=>{
-    if(typeof learnEnd !== 'undefined'){
+  useEffect(() => {
+    if (typeof learnEnd !== 'undefined') {
       setValue(0)
     }
     getStatistic().then((res) => {
-      if(res.data.optional){
+      if (res.data && res.data.optional) {
         setAppStatistics({ ...appStatistics, ...res.data.optional })
 
-         //    just amount of all words, ---  Num
-        setAmountOfWords(  Object.entries(res.data.optional).reduce((acc, el) => {
-          if(el[0].length > 20){
-            acc += 1
-          }
-          return acc
-        }, 0) )
-
+        //    just amount of all words, ---  Num
+        setAmountOfWords(
+          Object.entries(res.data.optional).reduce((acc, el) => {
+            if (el[0].length > 20) {
+              acc += 1
+            }
+            return acc
+          }, 0)
+        )
 
         //   array of Dates ---  ['Monday July 13', {...},  'Monday July 14', {...},]
-        setDatesArray(  Object.entries(res.data.optional).reduce((acc, el) => {
-          if(/,\s/.test(el[0])){
-            acc.push(el)
-          }
-          return acc
-        }, []) )
-
+        setDatesArray(
+          Object.entries(res.data.optional).reduce((acc, el) => {
+            if (/,\s/.test(el[0])) {
+              acc.push(el)
+            }
+            return acc
+          }, [])
+        )
 
         //    all correct answers from Dates ---- Num
-        setCorrectAnswers(  Object.entries(res.data.optional).reduce((acc, el) => {
-          if(el[0].length > 20){
-            const entries = Object.entries(el[1])
-            entries.forEach((el) => {
-              if(/\d/.test(el[0])){
-                acc += el[1].guessed ? el[1].guessed : 0;
-              }
-            })
-          }
-          return acc
-        }, 0) )
-
+        setCorrectAnswers(
+          Object.entries(res.data.optional).reduce((acc, el) => {
+            if (el[0].length > 20) {
+              const entries = Object.entries(el[1])
+              entries.forEach((el) => {
+                if (/\d/.test(el[0])) {
+                  acc += el[1].guessed ? el[1].guessed : 0
+                }
+              })
+            }
+            return acc
+          }, 0)
+        )
 
         //    data for each game
-        setSavannah(  Object.entries(res.data.optional).filter((el) => el[0] == 'savannah'))
-        setSpeakit(  Object.entries(res.data.optional).filter((el) => el[0] == 'speakit'))
-        setSprint(  Object.entries(res.data.optional).filter((el) => el[0] == 'sprint'))
-        setAudiocall( Object.entries(res.data.optional).filter((el) => el[0] == 'audiocall'))
-        setHangman( Object.entries(res.data.optional).filter((el) => el[0] == 'hangman'))
-        setPuzzle( Object.entries(res.data.optional).filter((el) => el[0] == 'puzzle'))
+        setSavannah(Object.entries(res.data.optional).filter((el) => el[0] == 'savannah'))
+        setSpeakit(Object.entries(res.data.optional).filter((el) => el[0] == 'speakit'))
+        setSprint(Object.entries(res.data.optional).filter((el) => el[0] == 'sprint'))
+        setAudiocall(Object.entries(res.data.optional).filter((el) => el[0] == 'audiocall'))
+        setHangman(Object.entries(res.data.optional).filter((el) => el[0] == 'hangman'))
+        setPuzzle(Object.entries(res.data.optional).filter((el) => el[0] == 'puzzle'))
       }
     })
   }, [])
 
-  
   return (
     <div style={{ width: '100%', diplay: 'flex', flexDirection: 'column' }}>
       <Paper square>
@@ -213,11 +213,14 @@ export function Statistics({learnEnd}) {
           newCards={amountOfWords}
           winrate={allcorrectAnswers}
           totalCards={amountOfWords}
-          studyTime={datesArray ? datesArray[0] ? datesArray[0][0] : datesArray[0] : 'today'}   
-                           // just the last time you was here learning
+          studyTime={datesArray ? (datesArray[0] ? datesArray[0][0] : datesArray[0]) : 'today'}
+          // just the last time you was here learning
           strike={amountOfWords / allcorrectAnswers}
-          repeat={words.filter(el => !el.new).length}
+          result={amountOfWords - allcorrectAnswers}
+          repeat={words.filter((el) => !el.new).length}
           userName={userData.name}
+          amountOfWords={amountOfWords}
+          isEnd
         />
       </TabPanel>
 
