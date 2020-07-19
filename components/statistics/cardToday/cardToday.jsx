@@ -2,8 +2,18 @@ import './cardToday.less'
 import React from 'react'
 import { Doughnut } from 'react-chartjs-2'
 
-
-const СardToday = ({ newCards, winrate, totalCards, studyTime, strike, repeat, userName }) => {
+const СardToday = ({
+  newCards,
+  winrate,
+  totalCards,
+  studyTime,
+  strike,
+  repeat,
+  userName,
+  result,
+  amountOfWords,
+  isEnd,
+}) => {
   const data = {
     labels: ['New cards', 'Correct answers', 'Total cards'],
     datasets: [
@@ -13,9 +23,9 @@ const СardToday = ({ newCards, winrate, totalCards, studyTime, strike, repeat, 
       },
     ],
   }
-  
-  const persent = typeof strike !== 'Infinity' ? Math.floor(strike*100) : 0
-  
+
+  const persent = typeof strike !== 'Infinity' ? Math.floor((strike || 0) * 100) : 0
+
   const options = {
     tooltips: {
       enabled: true,
@@ -25,9 +35,15 @@ const СardToday = ({ newCards, winrate, totalCards, studyTime, strike, repeat, 
 
   return (
     <div className='tab'>
-      <h2 className='studyTime'>
-        Study time: <span>{studyTime}</span>
-      </h2>
+      {isEnd ? (
+        <div className='congrats'>
+          <p className='congrats__name'>
+            Good job, <span>{userName}</span>!
+          </p>
+          <p className='congrats__text'>You've succeded your daily plan.</p>
+          <br />
+        </div>
+      ) : null}
       <div className='doughnat-wrapper'>
         <Doughnut
           data={data}
@@ -63,12 +79,9 @@ const СardToday = ({ newCards, winrate, totalCards, studyTime, strike, repeat, 
         </div>
         <p className='eagle__text'>Words for repetition</p>
       </div>
-      <div className='congrats'>
-        <p className='congrats__name'>
-          Good job, <span>{userName}</span>!
-        </p>
-        <p className='congrats__text'>You've succeded your daily plan.</p>
-      </div>
+      <h2 className='studyTime'>
+        Study time: <span>{studyTime}</span>
+      </h2>
     </div>
   )
 }

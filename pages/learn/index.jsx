@@ -6,18 +6,26 @@ import { Menu, Learn, UserAvatar, Dictionary } from 'components'
 import './style.less'
 
 const StartLearn = () => {
-  useEffect( () => {
-
+  useEffect(() => {
     // axios.get('https://afternoon-falls-25894.herokuapp.com/users')
-  } );
-  const { userData: { name, email }, isModal, setModal } = useContext( Context )
+  })
+  const {
+    userData: { name, email },
+    isModal,
+    setModal,
+  } = useContext(Context)
 
   return (
     <AppLayout>
       <div className='wrapper-main-page'>
         <Menu />
         <UserAvatar name={name} email={email} />
-        <Learn isOverflow={false} closeParent={() => { setModal( !isModal ) }}>
+        <Learn
+          isOverflow={false}
+          closeParent={() => {
+            setModal(!isModal)
+          }}
+        >
           <Dictionary />
         </Learn>
       </div>

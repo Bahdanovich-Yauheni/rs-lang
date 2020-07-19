@@ -101,6 +101,7 @@ body {
     top: 0;
     left: 0;
   }
+
   .hamburger:after {
     bottom: 0;
     left: 0;
@@ -137,9 +138,11 @@ body {
     color: @color-btn-white;
   }
 
-  .navigation__item:active, .navigation__item.active {
+  .navigation__item:active,
+  .navigation__item.active {
     border-top: 0.2rem solid @color-btn-white;
     background: linear-gradient(180deg, #54bfe0 0%, rgba(255, 255, 255, 0) 79.91%);
+
     & a {
       color: @color-btn-white;
     }
@@ -279,6 +282,7 @@ body {
     cursor: pointer;
     transition: all 0.3s ease-out;
     z-index: 1;
+    animation: radial-pulse 1s infinite;
   }
 
   .btn-start:hover,
@@ -907,5 +911,15 @@ body {
 
   .footer__add-color {
     color: @color-bg-success;
+  }
+}
+
+@keyframes radial-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(31, 101, 138, 0.2);
+  }
+
+  100% {
+    box-shadow: 0 0 0 2.4rem rgba(31, 101, 138, 0);
   }
 }

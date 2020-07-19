@@ -1,0 +1,28 @@
+.card-image img {
+    height: 300px;
+    max-height: 100%;
+    transition: all .3s ease-in-out
+}
+
+.card-image.min-img img {
+    height: 44px;
+    filter: grayscale(1);
+}
+
+.card-image {
+    position: relative;
+}
+
+.card-image button {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    background: #fffbf4;
+}
+
+.card-image button i:before {
+    transform: rotate(90deg)
+}

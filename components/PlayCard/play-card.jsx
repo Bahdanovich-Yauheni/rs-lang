@@ -17,18 +17,17 @@ import './play-card.less'
 import { saveStatistic } from 'lib'
 import { learnWordsStatistic, learnWordsPerDay } from 'lib/helpers/statisticHelp'
 
-
-const useStyles = makeStyles( ( theme ) => ( {
+const useStyles = makeStyles((theme) => ({
   btnRow: {
     display: 'flex',
     justifyContent: 'space-between',
-    [theme.breakpoints.up( 'xs' )]: {
+    [theme.breakpoints.up('xs')]: {
       padding: '1.6rem 0',
     },
-    [theme.breakpoints.up( 'sm' )]: {
+    [theme.breakpoints.up('sm')]: {
       padding: '1.6rem',
     },
-    [theme.breakpoints.up( 'md' )]: {
+    [theme.breakpoints.up('md')]: {
       padding: '1.6rem 0',
     },
     padding: '1.6rem 0',
@@ -38,10 +37,10 @@ const useStyles = makeStyles( ( theme ) => ( {
     },
   },
   gameboard: {
-    [theme.breakpoints.up( 'xs' )]: {
+    [theme.breakpoints.up('xs')]: {
       padding: '0 2.4rem',
     },
-    [theme.breakpoints.up( 'md' )]: {
+    [theme.breakpoints.up('md')]: {
       padding: '0',
     },
   },
@@ -68,64 +67,77 @@ const useStyles = makeStyles( ( theme ) => ( {
       color: theme.palette.common.textAdd,
     },
   },
-} ) )
+}))
 
-const PlayCardComponent = ( { word, next, updateWordsDB, showInfo } ) => {
-  const { 
-    cardSettings, 
+const PlayCardComponent = ({ word, next, updateWordsDB, showInfo }) => {
+  const {
+    cardSettings,
     setCardSettings,
     appStatistics,
     setAppStatistics,
-    cardSettings: { showDefenition, REPEATbutton, HARDbutton, SHOWANSWERbutton, EASYbutton, addIllustration, defenitionTranslation, totalLearned, todayLearned },
-  } = useContext( Context )
+    cardSettings: {
+      showDefenition,
+      REPEATbutton,
+      HARDbutton,
+      SHOWANSWERbutton,
+      EASYbutton,
+      addIllustration,
+      defenitionTranslation,
+      totalLearned,
+      todayLearned,
+    },
+  } = useContext(Context)
 
   const classes = useStyles()
-  const [audioWord, setAudioWord] = useState( null )
-  const [audioMeaning, setAudioMeaning] = useState( null )
-  const [audioExample, setAudioExample] = useState( null )
-  const [isAudioLock, setAudioLock] = useState( true )
-  const [isImageMinimized, setImageMinimized] = useState( false )
+  const [audioWord, setAudioWord] = useState(null)
+  const [audioMeaning, setAudioMeaning] = useState(null)
+  const [audioExample, setAudioExample] = useState(null)
+  const [isAudioLock, setAudioLock] = useState(true)
+  const [isImageMinimized, setImageMinimized] = useState(false)
 
-  const [isGuessed, setIsGuessed] = useState( false )
-  const [isGiveUp, setIsGiveUp] = useState( false )
+  const [isGuessed, setIsGuessed] = useState(false)
+  const [isGiveUp, setIsGiveUp] = useState(false)
 
   let isMounted = false
 
-  //   ---------------------------------function for storing words into statistic 
+  //   ---------------------------------function for storing words into statistic
   const createStatistic = (bool) => {
     const idword = word.id || word._id
-    
+
     const options = {
-        month: "long",
-        day: "numeric",
-        weekday: "short",
-        hour: "numeric",
-    }; 
-    const date = new Date(Date.now()-20031).toLocaleString('en', options);
-    const newStatistic = { ...appStatistics, [idword]: learnWordsStatistic(appStatistics, idword, bool), [date]: learnWordsPerDay(appStatistics, date, idword, bool) }
-    
+      month: 'long',
+      day: 'numeric',
+      weekday: 'short',
+      hour: 'numeric',
+    }
+    const date = new Date(Date.now() - 20031).toLocaleString('en', options)
+    const newStatistic = {
+      ...appStatistics,
+      [idword]: learnWordsStatistic(appStatistics, idword, bool),
+      [date]: learnWordsPerDay(appStatistics, date, idword, bool),
+    }
+
     setAppStatistics(newStatistic)
     saveStatistic(newStatistic)
   }
 
-
-  useEffect( () => {
+  useEffect(() => {
     isMounted = true
-    getAudio( word.audio ).then( ( url ) => {
-      isMounted && setAudioWord( url )
-    } )
+    getAudio(word.audio).then((url) => {
+      isMounted && setAudioWord(url)
+    })
     showDefenition &&
-      getAudio( word.audioMeaning ).then( ( url ) => {
-        isMounted && setAudioMeaning( url )
-      } )
-    getAudio( word.audioExample ).then( ( url ) => {
-      isMounted && setAudioExample( url )
-    } )
+      getAudio(word.audioMeaning).then((url) => {
+        isMounted && setAudioMeaning(url)
+      })
+    getAudio(word.audioExample).then((url) => {
+      isMounted && setAudioExample(url)
+    })
 
     // set total counter
-    const date = new Date( Date.now() ).toDateString()
+    const date = new Date(Date.now()).toDateString()
     const updatedTodayLearned = { ...todayLearned }
-    if ( updatedTodayLearned.date === date ) {
+    if (updatedTodayLearned.date === date) {
       updatedTodayLearned.count = updatedTodayLearned.count + 1
     } else {
       updatedTodayLearned.date = date
@@ -133,65 +145,94 @@ const PlayCardComponent = ( { word, next, updateWordsDB, showInfo } ) => {
     }
 
     const updatedSettings = { ...cardSettings, totalLearned: totalLearned + 1, todayLearned: updatedTodayLearned }
-    setCardSettings( updatedSettings )
-    saveSettings( updatedSettings )
+    setCardSettings(updatedSettings)
+    saveSettings(updatedSettings)
 
     return () => {
       isMounted = false
     }
-  }, [] )
+  }, [])
 
-  useEffect( () => {
-    if ( isGiveUp ) {
+  useEffect(() => {
+    if (isGiveUp) {
       word.learnIndex = 0
-      word.nextRepeat = getRepetitionTime( word.learnIndex )
-      updateWordsDB( word )
-    } else if ( isGuessed === true ) {
+      word.nextRepeat = getRepetitionTime(word.learnIndex)
+      updateWordsDB(word)
+    } else if (isGuessed === true) {
       word.learnIndex = word.learnIndex + 20 <= 100 ? word.learnIndex + 20 : 100
-      word.nextRepeat = getRepetitionTime( word.learnIndex )
+      word.nextRepeat = getRepetitionTime(word.learnIndex)
       createStatistic(true)
-      updateWordsDB( word )
-    } else if ( isGuessed !== false ) {
+      updateWordsDB(word)
+    } else if (isGuessed !== false) {
       word.learnIndex = word.learnIndex - 20 > 0 ? word.learnIndex - 20 : 0
-      word.nextRepeat = getRepetitionTime( word.learnIndex )
+      word.nextRepeat = getRepetitionTime(word.learnIndex)
       createStatistic(false)
-      updateWordsDB( word )
+      updateWordsDB(word)
     }
-  }, [isGuessed, isGiveUp] )
+  }, [isGuessed, isGiveUp])
 
-  const showMessage = ( type ) => {
-    switch ( type ) {
-      case 'hard': showInfo( { message: `Word added to the list of Hard Words`, type: 'success' } )
-        break;
-      case 'repeat': showInfo( { message: `Word added to the Repetition list`, type: 'success' } )
-        break;
-      case 'easy': showInfo( { message: `Word excluded from Learning list`, type: 'success' } )
-        break;
+  const showMessage = (type) => {
+    switch (type) {
+      case 'hard':
+        showInfo({ message: `Word added to the list of Hard Words`, type: 'success' })
+        break
+      case 'repeat':
+        showInfo({ message: `Word added to the Repetition list`, type: 'success' })
+        break
+      case 'easy':
+        showInfo({ message: `Word excluded from Learning list`, type: 'success' })
+        break
     }
 
     word.status = type
-    updateWordsDB( word )
+    updateWordsDB(word)
   }
-
   return (
     <div className='play-card'>
       <div className='card-box'>
         <div className={classes.btnRow}>
           <div className='btn-wrapper card-wrapper'>
-            {HARDbutton && <MuiButton themeName='hard' action={() => {
-              showMessage( 'hard' )
-            }}>Hard</MuiButton>}
-            {REPEATbutton && <MuiButton themeName='repeat' action={() => {
-              showMessage( 'repeat' )
-            }}>Repeat</MuiButton>}
-            {EASYbutton && <MuiButton themeName='easy' action={() => {
-              showMessage( 'easy' )
-            }}>Easy</MuiButton>}
+            {HARDbutton && (
+              <MuiButton
+                themeName='hard'
+                action={() => {
+                  showMessage('hard')
+                }}
+              >
+                Hard
+              </MuiButton>
+            )}
+            {REPEATbutton && (
+              <MuiButton
+                themeName='repeat'
+                action={() => {
+                  showMessage('repeat')
+                }}
+              >
+                Repeat
+              </MuiButton>
+            )}
+            {EASYbutton && (
+              <MuiButton
+                themeName='easy'
+                action={() => {
+                  showMessage('easy')
+                }}
+              >
+                Easy
+              </MuiButton>
+            )}
           </div>
-          {SHOWANSWERbutton && <MuiButton themeName='answer' action={() => setIsGiveUp( true )}>Answer</MuiButton>}
+          {SHOWANSWERbutton && (
+            <MuiButton themeName='answer' action={() => setIsGiveUp(true)}>
+              Answer
+            </MuiButton>
+          )}
         </div>
         <div className='play-image'>
-          {addIllustration && <PlayImage src={word.image} isImageMinimized={isImageMinimized} setImageMinimized={setImageMinimized} />}
+          {addIllustration && (
+            <PlayImage src={word.image} isImageMinimized={isImageMinimized} setImageMinimized={setImageMinimized} />
+          )}
         </div>
         <div className={`${classes.gameboard} card-wrapper`}>
           <CardText className='border-top-0' outerStyles={classes.styleDictionary} index='textExample' word={word}>
@@ -204,15 +245,29 @@ const PlayCardComponent = ( { word, next, updateWordsDB, showInfo } ) => {
             />
           </CardText>
           {showDefenition ? (
-            <CardText className='second-row' 
-                      outerStyles={classes.styleDictionary} 
-                      index='textMeaning' 
-                      word={word} 
-                      defenitionTranslation={defenitionTranslation} />
+            <CardText
+              className='second-row'
+              outerStyles={classes.styleDictionary}
+              index='textMeaning'
+              word={
+                isGuessed
+                  ? { textMeaning: word.textMeaning, textMeaningTranslate: word.textMeaningTranslate }
+                  : {
+                      textMeaning: word.textMeaning.replace(
+                        /(.*)(<i>.*<\/i>)(.*)/,
+                        `$1<i>${'-'.repeat(word.word.length)}</i>$3`
+                      ),
+                      textMeaningTranslate: word.textMeaningTranslate,
+                    }
+              }
+              defenitionTranslation={defenitionTranslation}
+            />
           ) : null}
           <PlayFooter
             word={word}
-            audio={( isGuessed === true || isGiveUp === true ) ? audioExample : [audioWord, showDefenition ? audioMeaning : null]}
+            audio={
+              isGuessed === true || isGiveUp === true ? audioExample : [audioWord, showDefenition ? audioMeaning : null]
+            }
             isAudioLock={isAudioLock}
             isGuessed={isGuessed}
             showTheAnswer={isGiveUp}
@@ -227,4 +282,4 @@ const PlayCardComponent = ( { word, next, updateWordsDB, showInfo } ) => {
   )
 }
 
-export const PlayCard = withInfo( PlayCardComponent )
+export const PlayCard = withInfo(PlayCardComponent)

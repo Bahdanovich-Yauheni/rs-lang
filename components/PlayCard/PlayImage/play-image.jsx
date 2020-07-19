@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Skeleton from '@material-ui/lab/Skeleton'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
 import { getImg } from 'lib/crud/'
-
+import './play-image.less'
 const theme = createMuiTheme({
   overrides: {
     MuiSkeleton: {
@@ -24,7 +24,7 @@ export function PlayImage({ src, isImageMinimized, setImageMinimized }) {
     })
   }, [])
   return (
-    <div className={isImageMinimized ? 'min-img' : ''}>
+    <div className={`card-image ${isImageMinimized ? 'min-img' : ''}`}>
       {(isLoaded && <img src={source.current}></img>) || (
         <ThemeProvider theme={theme}>
           <Skeleton animation='wave' variant='rect'>
@@ -35,7 +35,9 @@ export function PlayImage({ src, isImageMinimized, setImageMinimized }) {
           </Skeleton>
         </ThemeProvider>
       )}
-      {/* <button onClick={() => setImageMinimized(!isImageMinimized)}>hide</button> */}
+      <button onClick={() => setImageMinimized(!isImageMinimized)}>
+        {!isImageMinimized ? <i className='icon-left-open-big' /> : <i className='icon-right-open-big' />}
+      </button>
     </div>
   )
 }
