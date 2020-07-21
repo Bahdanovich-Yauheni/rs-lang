@@ -201,7 +201,7 @@ export function Dictionary() {
           </Tabs>
         </MuiThemeProvider>
       </Paper>
-      <TabPanel value={value} index={0}>
+      <TabPanel value={value} index={0} className={classes.overflow}>
         {/* hard */}
         {HardCards.length ? HardCards : <div className='card-box-1'><p>There is no words yet</p></div>}
       </TabPanel>
@@ -209,7 +209,7 @@ export function Dictionary() {
         {/* learn */}
         {LearnCards}
       </TabPanel>
-      <TabPanel value={value} index={2}>
+      <TabPanel value={value} index={2} className={classes.overflow}>
         {/* easy */}
         {EasyCards.length ? EasyCards : <div className='card-box-1'><p>There is no words yet</p></div>}
       </TabPanel>

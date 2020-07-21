@@ -220,7 +220,7 @@ export function Statistics({ learnEnd, initialActive, isEnd }) {
           repeat={words.filter((el) => !el.new).length}
           userName={userData.name}
           amountOfWords={amountOfWords}
-          isEnd
+          isEnd={isEnd}
         />
       </TabPanel>
 
