@@ -109,6 +109,7 @@ const GlobalState = (props) => {
   const [learnProgress, setLearnProgress] = useState(initialLearnProgress)
   const [userData, setUserData] = useState({})
   const [isModal, setModal] = useState(false)
+  const [repeatCount, setRepetition] = useState(0)
 
   const wordsPage = useRef()
 
@@ -170,11 +171,13 @@ const GlobalState = (props) => {
 
     const fetchWords = (amountOfCards, group, difficultOnly) => {
       preFetchWords(amountOfCards, group).then((response) => {
+        const {words, newWords} = response
         if (difficultOnly) {
-          const difficult = response.filter((word) => word.optional && word.optional.status === 'hard')
+          const difficult = words.filter((word) => word.optional && word.optional.status === 'hard')
           setWords(difficult)
         } else {
-          setWords(response)
+          setWords(words)
+          newWords && setNewWords(newWords)
         }
       })
     }
@@ -256,6 +259,8 @@ const GlobalState = (props) => {
         setAppStatistics,
         isModal,
         setModal,
+        repeatCount,
+        setRepetition
       }}
     >
       {pathname === '/' || (pathname !== '/' && appSettings.isAuthorized) ? props.children : null}

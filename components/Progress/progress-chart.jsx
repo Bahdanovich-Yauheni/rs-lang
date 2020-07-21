@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) =>
 export function ProgressChart({ width, value }) {
   const styles = useStyles()
   const chartItems = [...Array(5).keys()].map((id) => {
-    if ((value < 10 && id === 0) || (id + 1) * 20 <= value + 10)
+    if (id + 1 <= value / 20)
       return <div key={`${(id + 1) * 20}`} className={styles.filled} style={{ height: `${(id + 1) * 20}%` }} />
     return <div key={`${(id + 1) * 20}`} className={styles.unfilled} style={{ height: `${(id + 1) * 20}%` }} />
   })

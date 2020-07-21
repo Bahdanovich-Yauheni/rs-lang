@@ -1,5 +1,6 @@
 import './cardToday.less'
-import React from 'react'
+import React, {useContext} from 'react'
+import {Context} from 'context'
 import { Doughnut } from 'react-chartjs-2'
 
 const СardToday = ({
@@ -24,7 +25,9 @@ const СardToday = ({
     ],
   }
 
-  const persent = typeof strike !== 'Infinity' ? Math.floor((strike || 0) * 100) : 0
+  const {repeatCount} = useContext(Context)
+
+  const persent = Math.floor((winrate * 100) / totalCards).toFixed(0)
 
   const options = {
     tooltips: {
@@ -74,8 +77,8 @@ const СardToday = ({
       <div className='eagle'>
         <p className='eagle__text eagle__text_left'>Correct answers persent</p>
         <div className='eagle__digs'>
-          <p className='eagle__dig'>{persent} %</p>
-          <p className='eagle__dig eagle__dig_right-wing'>{repeat}</p>
+          <p className='eagle__dig'>{persent}</p>
+          <p className='eagle__dig eagle__dig_right-wing'>{repeatCount}</p>
         </div>
         <p className='eagle__text'>Words for repetition</p>
       </div>
